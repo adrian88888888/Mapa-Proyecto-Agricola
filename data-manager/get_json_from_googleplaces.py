@@ -117,7 +117,7 @@ def get_id_set_from_json_data(json_data):
             id_set.add(place['place_id'])
     return id_set
 
-api_key = 'AIzaSyAfXEWBHx6Md3IaCfjlavnV-z1GxYzYu1w'
+api_key = ''
 search_terms = [
     'Verduleria',
     'Agropecuaria',
