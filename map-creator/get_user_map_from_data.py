@@ -1,6 +1,6 @@
 import folium
 import json
-from folium.plugins import Draw, AntPath
+from folium.plugins import AntPath, LocateControl
 import os
 import pprint
 import csv
@@ -97,7 +97,9 @@ folium.plugins.AntPath(locations=rutes.ruta_a, delay=5000, opacity=1, color='ora
 
 # folium.PolyLine(ruta_a, color='blue', weight=2.5, opacity=1).add_to(folium_map)
 
-Draw(export=True).add_to(folium_map)
+lc = LocateControl()
+lc.add_to(folium_map)
+
 folium_map.save(map_path)
 full_map_path = os.path.abspath(map_path)
 os.startfile(full_map_path)
