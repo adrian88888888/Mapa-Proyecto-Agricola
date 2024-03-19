@@ -17,8 +17,8 @@ def load_single_col_tsv_into_set(file):
         first_column_set = {row[0] for row in tsvreader}
     return first_column_set
 
-starting_zoom = 12
-coords_plaza_ejercito = (-34.86304757940927, -56.169061198494575)
+starting_zoom = 13
+coords_plaza_ejercito = (-34.86304757940927, -56.209061198494575)
 starting_location = coords_plaza_ejercito
 
 current_directory = os.path.dirname(os.path.abspath(__file__))
@@ -51,9 +51,7 @@ for place in googleplaces_data:
     place_id = place['place_id']
     lat = place['geometry']['location']['lat']
     lng = place['geometry']['location']['lng']
-    link_to_place = place['url']
-    resenias = place.get('user_ratings_total', 0)
-    estrellas = place.get('rating')
+    link_to_indications_to_place = 'https://www.google.com/maps/dir//' +  str(lat) + ',' + str(lng)
     search_term = place['additional_info']['search_term']
     formated_open_time = get_formated_open_time(place_id, formatted_open_time)
 
@@ -72,11 +70,12 @@ for place in googleplaces_data:
         icon_path = os.path.join(current_directory, 'icons', icon_name)
         icono_personalizado = folium.CustomIcon(icon_path, icon_size=(32, 32))
 
-        popup = 'Id: <br>' + place_id + '<br><br>Nombre: <br>' + name + '<br><br>' + '<a href="' + link_to_place + '" target="_blank">Abrir en Maps &boxbox;</a>' + '<br><br>Reseñas: <br>' + str(resenias) + '<br><br>Estrellas: <br>' + str(estrellas) + '<br><br>' + 'Horarios:<br>' + formated_open_time
+        popup = 'Nombre: <br>' + name + '<br><br>' + '<a href="' + link_to_indications_to_place + '" target="_blank">Cómo ir &boxbox;</a>' + '<br><br>' + 'Horarios:<br>' + formated_open_time
         folium.Marker(
             location=[lat, lng],
             popup=folium.Popup(popup, max_width=3000),
-            icon=icono_personalizado
+            icon=icono_personalizado,
+            lazy=True
             ).add_to(folium_map)
 
 nelson = [-34.8265, -56.2651]
