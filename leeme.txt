@@ -1,0 +1,17 @@
+Explicacion general de todo este repo:
+todo esto puede cambiar pero la idea general es crear data y luego hacer un mapa
+
+un poco mas detallado pero no future proved
+1-se genera la data:
+	1-se descarga toda la data disponible desde google places api y se crea un json
+	2-se crea data adicional para complementar ese json en donde se colocan las id's de x ejemplo
+	lugares que no me parece q se debe ir a vender o lugares q son potenciales para un rubroespecifico
+	3-se crea una ruta(un tsv con los clientes a recorrer en orden), y luego se crea una polilinea
+	usando roads api y un decodificador de polilinea y la polilinea se almacena
+	4-se toma la info de la database de clientes del proyecto agricola
+	5-seguramente data de esta seccion cambie con el tiempo, pero masomenos la idea es juntar la data
+	necesaria
+2-se hace display de un mapa de folium para mi con toda la data para analizarla y seguir refinandola(main map se llama)
+3-se hace un mapa solo para papa con las cosas q el quiere ver
+
+adicionales: se hacen heatmaps para analisis de datos
