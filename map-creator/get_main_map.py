@@ -4,13 +4,12 @@ from folium.plugins import Draw, AntPath
 import os
 import pprint
 import csv
-import rutes
 import polyline
 
-def get_formated_open_time(place_id, formatted_open_time):
+def get_formatted_open_time(place_id, formatted_open_time):
     for place in formatted_open_time:
         if place['place_id'] == place_id:
-            return place.get('formatted_open_time')
+            return place['formatted_open_time']
 
 def load_single_col_tsv_into_set(file):
     with open(file, 'r', newline='') as tsvfile:
@@ -23,23 +22,22 @@ coords_plaza_ejercito = (-34.86304757940927, -56.169061198494575)
 starting_location = coords_plaza_ejercito
 
 current_directory = os.path.dirname(os.path.abspath(__file__))
-data_path = r'\data'
-data_from_googleplaces_path = current_directory + data_path + r'\json_from_googleplaces.json'
-formatted_open_time_path = current_directory + data_path + r'\formatted_open_time.json'
-map_path = current_directory + r'\folium_map_from_json.html'
+map_path = os.path.join(current_directory, 'main_map.html')
 
+data_from_googleplaces_path = os.path.join(current_directory, 'data', 'from-google-places', 'json_from_googleplaces.json')
 with open(data_from_googleplaces_path, 'r') as file:
     googleplaces_data = json.load(file)
 
+formatted_open_time_path = os.path.join(current_directory, 'data', 'from-google-places', 'formatted_open_time.json')
 with open(formatted_open_time_path, 'r') as file:
-    formatted_open_time = json.load(file)
+    json_of_formatted_open_time = json.load(file)
 
 # load tsv's
-aptos_para_macetas_de_albahaca_path = current_directory + r'\data\aptos para macetas de albahaca.tsv'
-dados_de_baja_por_cualquier_motivo_path = current_directory + r'\data\Dados de baja por cualquier motivo.tsv'
-florerias_de_eventos_o_cementerios_path = current_directory + r'\data\florerias de eventos o cementerios.tsv'
+clientes_macetas_de_albahaca_path = os.path.join(current_directory, 'data', 'data-mia', 'potenciales clientes para macetas de albahaca.tsv')
+dados_de_baja_por_cualquier_motivo_path = os.path.join(current_directory, 'data', 'data-mia', 'dados de baja por cualquier motivo.tsv')
+florerias_de_eventos_o_cementerios_path = os.path.join(current_directory, 'data', 'data-mia', 'florerias de eventos o cementerios.tsv')
 
-aptos_para_macetas_de_albahaca = load_single_col_tsv_into_set(aptos_para_macetas_de_albahaca_path)
+clientes_macetas_de_albahaca = load_single_col_tsv_into_set(clientes_macetas_de_albahaca_path)
 dados_de_baja_por_cualquier_motivo = load_single_col_tsv_into_set(dados_de_baja_por_cualquier_motivo_path)
 florerias_de_eventos_o_cementerios = load_single_col_tsv_into_set(florerias_de_eventos_o_cementerios_path)
 
@@ -54,8 +52,8 @@ for place in googleplaces_data:
     resenias = place.get('user_ratings_total', 0)
     estrellas = place.get('rating')
     search_term = place['additional_info']['search_term']
-    formated_open_time = get_formated_open_time(place_id, formatted_open_time)
-    if place_id in aptos_para_macetas_de_albahaca:
+    formatted_open_time = get_formatted_open_time(place_id, json_of_formatted_open_time)
+    if place_id in clientes_macetas_de_albahaca:
         icon_name = 'tick.png'
     elif place_id in florerias_de_eventos_o_cementerios:
         icon_name = 'cancel.png'
@@ -64,26 +62,21 @@ for place in googleplaces_data:
     else:
         if search_term == "Verduleria":
             icon_name = 'verduleria.png'
-            icon_size = (32, 32)
         elif search_term == 'Agropecuaria':
             icon_name = 'agropecuaria.png'
-            icon_size = (32, 32)
         elif search_term == 'Floreria':
             icon_name = 'floreria.png'
-            icon_size = (32, 32)
         elif search_term == 'Feria':
             icon_name = 'feria.png'
-            icon_size = (32, 32)
         elif search_term == 'Vivero':
             icon_name = 'vivero.png'
-            icon_size = (32, 32)
         else:
             icon_name = 'no-icon.png'
 
     icon_path = os.path.join(current_directory, 'icons', icon_name)
-    icono_personalizado = folium.CustomIcon(icon_path, icon_size=icon_size)
+    icono_personalizado = folium.CustomIcon(icon_path, icon_size=(32, 32))
 
-    popup = 'Id: <br>' + place_id + '<br><br>Nombre: <br>' + name + '<br><br>' + '<a href="' + link_to_place + '" target="_blank">Abrir en Maps &boxbox;</a>' + '<br><br>Reseñas: <br>' + str(resenias) + '<br><br>Estrellas: <br>' + str(estrellas) + '<br><br>' + 'Horarios:<br>' + formated_open_time
+    popup = 'Id: <br>' + place_id + '<br><br>Nombre: <br>' + name + '<br><br>' + '<a href="' + link_to_place + '" target="_blank">Abrir en Maps &boxbox;</a>' + '<br><br>Reseñas: <br>' + str(resenias) + '<br><br>Estrellas: <br>' + str(estrellas) + '<br><br>' + 'Horarios:<br>' + str(formatted_open_time)
     folium.Marker(
         location=[lat, lng],
         popup=folium.Popup(popup, max_width=3000),
@@ -107,12 +100,11 @@ folium.Marker(
     icon=icono_personalizado,
 ).add_to(folium_map)
 
-rute_filename = 'ruta_a.json'
-rute_filepath = os.path.join(current_directory, 'data', rute_filename)
-with open(rute_filepath, 'r') as file:
-    rute_a = json.load(file)
+polyline_rute_b_filepath = os.path.join(current_directory, 'data', 'rutas', 'ruta_b', 'polilinea ruta b.json')
+with open(polyline_rute_b_filepath, 'r') as file:
+    rute_b = json.load(file)
 
-folium.plugins.AntPath(locations=rute_a, delay=5000, opacity=1, color='orange', weight=5, dash_array=[20, 30]).add_to(folium_map)
+folium.plugins.AntPath(locations=rute_b, delay=5000, opacity=1, color='orange', weight=5, dash_array=[20, 30]).add_to(folium_map)
 
 # folium.PolyLine(ruta_a, color='blue', weight=2.5, opacity=1).add_to(folium_map)
 

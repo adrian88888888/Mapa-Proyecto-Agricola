@@ -4,6 +4,15 @@ import os
 import csv
 import json
 
+api_key = ''
+
+# un monton de paths q no se como establecer de forma facil todo de una
+current_directory = os.path.dirname(os.path.abspath(__file__))
+integrantes_ruta_b_path = os.path.join(current_directory, 'ruta_b', 'integrantes ruta b.tsv')
+json_from_googleplaces_path = r'C:\Work in Progress\Repos en GitHub\Mapa-Proyecto-Agricola\map-creator\data\from-google-places\json_from_googleplaces.json'
+save_name = 'polilinea ruta b.json'
+save_path = os.path.join(current_directory, 'ruta_b', save_name)
+
 def get_polyline(api_key, origin, destination):
     url = f'https://maps.googleapis.com/maps/api/directions/json?origin={origin}&destination={destination}&key={api_key}'
     response = requests.get(url)
@@ -14,16 +23,24 @@ def get_polyline(api_key, origin, destination):
 
 def get_combined_polyline(locations, api_key):
     combined_polyline = []
+    origin = f"{-34.8265},{-56.2651}"
+    destination = f"{locations[1][0]},{locations[1][1]}"
+    polyline = get_polyline(api_key, origin, destination)
+    combined_polyline.append(polyline)
     for i in range(len(locations) - 1):
         origin = f"{locations[i][0]},{locations[i][1]}"
         destination = f"{locations[i+1][0]},{locations[i+1][1]}"
         polyline = get_polyline(api_key, origin, destination)
         combined_polyline.append(polyline)
+    origin = f"{locations[i+1][0]},{locations[i+1][1]}"
+    destination = f"{-34.8265},{-56.2651}"
+    polyline = get_polyline(api_key, origin, destination)
+    combined_polyline.append(polyline)
     return combined_polyline
 
-def get_locations(api_key, googleplaces_data, ruta_a_ids):
+def get_locations(api_key, googleplaces_data, integrantes):
     locations = []
-    for id in ruta_a_ids:
+    for id in integrantes:
         for place in googleplaces_data:
             place_id = place['place_id']
             if id == place_id:
@@ -43,24 +60,16 @@ def save_polyline_to_file(polyline, filename):
     with open(filename, 'w') as file:
         json.dump(polyline, file)
 
-current_directory = os.path.dirname(os.path.abspath(__file__))
 
 # load tsv's
-ruta_a_path = os.path.join(current_directory, 'Ruta A v2.tsv')
-ruta_a_ids = load_single_col_tsv_into_list(ruta_a_path)
+integrantes_ruta_b = load_single_col_tsv_into_list(integrantes_ruta_b_path)
 
 # load json
-json_from_googleplaces_path = os.path.join(current_directory, 'json_from_googleplaces.json')
 with open(json_from_googleplaces_path, 'r') as file:
     googleplaces_data = json.load(file)
 
-api_key = 'AIzaSyApbvwG7WZYTkcno9Pxfgwl005pKoU6YrM'
-locations = get_locations(api_key, googleplaces_data, ruta_a_ids)
+locations = get_locations(api_key, googleplaces_data, integrantes_ruta_b)
 
 combined_polyline = get_combined_polyline(locations, api_key)
-# print(combined_polyline, '<--------------------------')
 
-save_name = 'ruta_a.json'
-current_directory = os.getcwd()
-save_path = os.path.join(current_directory, 'map-creator', 'data', save_name)
 save_polyline_to_file(combined_polyline, save_path)
