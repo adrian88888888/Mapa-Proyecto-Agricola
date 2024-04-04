@@ -104,7 +104,7 @@ polyline_rute_b_filepath = os.path.join(current_directory, 'data', 'rutas', 'rut
 with open(polyline_rute_b_filepath, 'r') as file:
     rute_b = json.load(file)
 
-folium.plugins.AntPath(locations=rute_b, delay=5000, opacity=1, color='orange', weight=5, dash_array=[20, 30]).add_to(folium_map)
+folium.plugins.AntPath(locations=rute_b, delay=2000, opacity=1, color='orange', weight=5, dash_array=[20, 30]).add_to(folium_map)
 
 # folium.PolyLine(ruta_a, color='blue', weight=2.5, opacity=1).add_to(folium_map)
 
