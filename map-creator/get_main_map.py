@@ -55,10 +55,10 @@ for place in googleplaces_data:
     formatted_open_time = get_formatted_open_time(place_id, json_of_formatted_open_time)
     if place_id in clientes_macetas_de_albahaca:
         icon_name = 'tick.png'
-    elif place_id in florerias_de_eventos_o_cementerios:
-        icon_name = 'cancel.png'
+    # elif place_id in dados_de_baja_por_cualquier_motivo:
+        # icon_name = 'cancel.png'
     elif place_id in dados_de_baja_por_cualquier_motivo:
-        icon_name = 'cancel.png'
+        continue
     else:
         if search_term == "Verduleria":
             icon_name = 'verduleria.png'
@@ -100,11 +100,11 @@ folium.Marker(
     icon=icono_personalizado,
 ).add_to(folium_map)
 
-polyline_rute_b_filepath = os.path.join(current_directory, 'data', 'rutas', 'ruta_b', 'polilinea ruta b.json')
-with open(polyline_rute_b_filepath, 'r') as file:
-    rute_b = json.load(file)
+polyline_rute_sayago_filepath = os.path.join(current_directory, 'data', 'rutas', 'ruta_sayago', 'polilinea ruta.json')
+with open(polyline_rute_sayago_filepath, 'r') as file:
+    rute_sayago = json.load(file)
 
-folium.plugins.AntPath(locations=rute_b, delay=2000, opacity=1, color='orange', weight=5, dash_array=[20, 30]).add_to(folium_map)
+folium.plugins.AntPath(locations=rute_sayago, delay=2000, opacity=1, color='blue', weight=5, dash_array=[20, 30]).add_to(folium_map)
 
 # folium.PolyLine(ruta_a, color='blue', weight=2.5, opacity=1).add_to(folium_map)
 
