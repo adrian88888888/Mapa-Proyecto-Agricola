@@ -62,8 +62,6 @@ zoom_inicial = [13] # un numero mas bajo corresponde a menos zoom
 
 mapa = folium.Map(location=(punto_de_inicio), zoom_start=zoom_inicial, crs='EPSG3857') # crs='EPSG3857' es para usar el mismo sistema de coordenadas q el de google maps
 
-# current_directory = os.path.dirname(os.path.abspath(__file__))
-# database_path = os.path.join(current_directory, pass)
 database_path = r'C:\Work in Progress\Repos en GitHub\Mapa-Proyecto-Agricola\map-creator\data\from-google-sheets-clientes-database\using tsv + pandas\Administración Agricola - 🤝Clientes.tsv'
 dataframe = pd.read_csv(database_path, sep='\t')
 dataframe = dataframe.drop(index=[0, 1]).reset_index(drop=True)

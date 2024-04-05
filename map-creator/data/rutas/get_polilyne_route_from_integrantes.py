@@ -4,14 +4,17 @@ import os
 import csv
 import json
 
-api_key = ''
+api_key = 'AIzaSyDETYNQoZxqS-7t5c4qdo5jm3QW8G4uFks'
+
+ruta_a_crear = 'ruta_sayago'
+# ruta_a_crear = 'ruta_del_prado'
 
 # un monton de paths q no se como establecer de forma facil todo de una
 current_directory = os.path.dirname(os.path.abspath(__file__))
-integrantes_ruta_sayago_path = os.path.join(current_directory, 'ruta_sayago', 'integrantes de la ruta.tsv')
+integrantes_ruta_sayago_path = os.path.join(current_directory, ruta_a_crear, 'integrantes de la ruta.tsv')
 json_from_googleplaces_path = r'C:\Work in Progress\Repos en GitHub\Mapa-Proyecto-Agricola\map-creator\data\from-google-places\json_from_googleplaces.json'
 save_name = 'polilinea ruta.json'
-save_path = os.path.join(current_directory, 'ruta_sayago', save_name)
+save_path = os.path.join(current_directory, ruta_a_crear, save_name)
 
 def get_polyline(api_key, origin, destination):
     url = f'https://maps.googleapis.com/maps/api/directions/json?origin={origin}&destination={destination}&key={api_key}'

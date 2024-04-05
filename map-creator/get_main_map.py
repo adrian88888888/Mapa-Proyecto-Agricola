@@ -1,10 +1,11 @@
 import folium
 import json
-from folium.plugins import Draw, AntPath
+from folium.plugins import Draw, AntPath, LocateControl
 import os
 import pprint
 import csv
 import polyline
+import pandas as pd
 
 def get_formatted_open_time(place_id, formatted_open_time):
     for place in formatted_open_time:
@@ -100,15 +101,83 @@ folium.Marker(
     icon=icono_personalizado,
 ).add_to(folium_map)
 
+# ruta sayago
 polyline_rute_sayago_filepath = os.path.join(current_directory, 'data', 'rutas', 'ruta_sayago', 'polilinea ruta.json')
 with open(polyline_rute_sayago_filepath, 'r') as file:
     rute_sayago = json.load(file)
-
 folium.plugins.AntPath(locations=rute_sayago, delay=2000, opacity=1, color='blue', weight=5, dash_array=[20, 30]).add_to(folium_map)
+
+# ruta del prado
+polyline_rute_del_prado_filepath = os.path.join(current_directory, 'data', 'rutas', 'ruta_del_prado', 'polilinea ruta.json')
+with open(polyline_rute_del_prado_filepath, 'r') as file:
+    rute_del_prado = json.load(file)
+folium.plugins.AntPath(locations=rute_del_prado, delay=2000, opacity=1, color='green', weight=5, dash_array=[20, 30]).add_to(folium_map)
+
+def get_tuple_of_coords_from_string(string):
+    print(string)
+    lat_str, lon_str = string.split(',')
+    lat = float(lat_str)
+    lon = float(lon_str)
+    return (lat, lon)
+
+def add_marker_from_dataframe(mapa, dataframe):
+    rows, columns = dataframe.shape
+    for each_row in range(rows):
+        nombre_en_tabla_ventas = dataframe.iloc[each_row, nombre_en_tabla_ventas_col]
+        if not pd.isna(nombre_en_tabla_ventas):
+            categoria = dataframe.iloc[each_row, categoria_col]
+            if categoria == 'UAM':
+                continue
+
+            coords_string = dataframe.iloc[each_row, coords_col]
+            if not pd.isna(coords_string):
+                coords = get_tuple_of_coords_from_string(coords_string)
+                lat, lon = coords
+
+            frecuencia_de_compra = dataframe.iloc[each_row, frecuencia_de_compra_col]
+            if frecuencia_de_compra == '1-Frecuente':
+                icon_name = 'contact green.png'
+            elif frecuencia_de_compra == '2-Esporadico':
+                icon_name = 'contact yellow.png'
+            elif frecuencia_de_compra == '3-No Establecida':
+                icon_name = 'contact gray.png'
+            elif frecuencia_de_compra == '4-Muy Esporadico':
+                icon_name = 'contact red.png'
+
+            current_directory = 'C:\Work in Progress\Repos en GitHub\Mapa-Proyecto-Agricola\map-creator'
+            icon_path = os.path.join(current_directory, 'icons', icon_name)
+            icono_personalizado = folium.CustomIcon(icon_path, icon_size=(32, 32))
+
+            link_wwp = 'https://wa.me/' + str(dataframe.iloc[each_row, wwp_col])
+
+            folium.Marker(
+                        location=coords,
+                        popup=str(dataframe.iloc[each_row, nombre_en_tabla_ventas_col]) + '<a href=' + link_wwp + '>Abrir Chat de Wwp</a>',
+                        icon=icono_personalizado
+                        ).add_to(mapa)
+    return mapa
+
+def letra_a_numero(letra):
+    return ord(letra.lower()) - ord('a')
+
+wwp_col = letra_a_numero('H')
+place_nombre_en_tabla_ventas_col = letra_a_numero('M')
+coords_col = letra_a_numero('L')
+nombre_en_tabla_ventas_col = letra_a_numero('I')
+frecuencia_de_compra_col = letra_a_numero('F')
+categoria_col = letra_a_numero('E')
+
+database_path = r'C:\Work in Progress\Repos en GitHub\Mapa-Proyecto-Agricola\map-creator\data\from-google-sheets-clientes-database\using tsv + pandas\Administración Agricola - 🤝Clientes.tsv'
+dataframe = pd.read_csv(database_path, sep='\t')
+dataframe = dataframe.drop(index=[0, 1]).reset_index(drop=True)
+add_marker_from_dataframe(folium_map, dataframe)
 
 # folium.PolyLine(ruta_a, color='blue', weight=2.5, opacity=1).add_to(folium_map)
 
-Draw(export=True).add_to(folium_map)
+lc = LocateControl()
+lc.add_to(folium_map)
+
+# Draw(export=True).add_to(folium_map)
 folium_map.save(map_path)
 full_map_path = os.path.abspath(map_path)
 os.startfile(full_map_path)
