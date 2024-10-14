@@ -49,7 +49,8 @@ def add_clients_from_dataframe(mapa, dataframe):
             elif frecuencia_de_compra == '3-No Establecida':
                 icon_name = 'contact gray.png'
             elif frecuencia_de_compra == '4-Muy Esporadico':
-                icon_name = 'contact red.png'
+                continue
+                # icon_name = 'contact red.png'
 
             icon_path = repo_path + '\map-creator\icons\\' + icon_name
             icono_personalizado = folium.CustomIcon(icon_path, icon_size=(32, 32))
@@ -146,16 +147,19 @@ for place in googleplaces_data:
     estrellas = place.get('rating')
     search_term = place['additional_info']['search_term']
     formatted_open_time = get_formatted_open_time(place_id, json_of_formatted_open_time)
-    if place_id in clientes_macetas_de_albahaca:
-        icon_name = 'tick.png'
+    # if place_id in clientes_macetas_de_albahaca:
+    #     icon_name = 'tick.png'
         # continue
     # elif place_id in dados_de_baja_por_cualquier_motivo:
     #     icon_name = 'cancel.png'
-    elif place_id in dados_de_baja_por_cualquier_motivo:
+    if place_id in dados_de_baja_por_cualquier_motivo:
+        continue
+    elif place_id in florerias_de_eventos_o_cementerios:
         continue
     else:
         if search_term == "Verduleria":
-            icon_name = 'verduleria.png'
+            continue
+            # icon_name = 'verduleria.png'
         elif search_term == 'Agropecuaria':
             icon_name = 'agropecuaria.png'
         elif search_term == 'Floreria':
