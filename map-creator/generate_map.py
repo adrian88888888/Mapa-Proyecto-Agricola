@@ -186,7 +186,7 @@ for place in googleplaces_data:
 
 locate_control = LocateControl()
 locate_control.add_to(folium_map)
-# Draw(export=True).add_to(folium_map)
+Draw(export=True).add_to(folium_map)
 
 folium_map.save(map_path)
 full_map_path = os.path.abspath(map_path)
