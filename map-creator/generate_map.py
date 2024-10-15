@@ -72,8 +72,22 @@ def inject_script_into_html():
     with open('map.html', 'r', encoding='utf-8') as file:
         html_content = file.read()
 
+    '''la siguiente linea:
+    en el html cambia cosas como map_2d7121202b175e2f1001820765164300 a map 
+    ya q folium crea una instancia de map pero le agrega todo eso para q puedas 
+    hacer varios mapas unicos, luego en el .js necesito hacer referencia a esa
+    instancia para capturar los eventos, asique deberia cambiar el contenido de
+    js cada vez q genere el mapa, ya q al generarse denuevo se inventa una nueva
+    "id":
+    '''
     html_content = re.sub(r'map_\w+', 'map', html_content)
 
+    
+    '''lo siguiente agrega un entry point para el icon_resizer.js
+    es asi de retorcido xq necesita agregarlo al final del todo
+    ya q si llamas al script antes trabajaria sobre un objeto map
+    q aun no fue creado en el html
+    '''
     last_script_index = html_content.rfind('</script>')
 
     script_tag = '<script src="icon_resizer.js"></script>'
