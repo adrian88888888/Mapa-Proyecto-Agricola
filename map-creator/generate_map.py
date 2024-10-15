@@ -6,6 +6,7 @@ import pprint
 import csv
 import polyline
 import pandas as pd
+import re
 
 # quiza esta linea te sirva en este proyecto: current_path = os.getcwd()
 
@@ -71,8 +72,21 @@ def inject_script_into_html():
     with open('map.html', 'r', encoding='utf-8') as file:
         html_content = file.read()
 
+    html_content = re.sub(r'map_\w+', 'map', html_content)
+
+    last_script_index = html_content.rfind('</script>')
+
     script_tag = '<script src="icon_resizer.js"></script>'
-    html_content = html_content.replace('</body>', f'{script_tag}\n</body>')
+    
+    if last_script_index != -1:
+        html_content = (html_content[:last_script_index + len('</script>')] + 
+                        f'\n{script_tag}\n' + 
+                        html_content[last_script_index + len('</script>'):])
+    else:
+        body_end_index = html_content.rfind('</body>')
+        html_content = (html_content[:body_end_index] + 
+                        f'{script_tag}\n' + 
+                        html_content[body_end_index:])
 
     with open('map.html', 'w', encoding='utf-8') as file:
         file.write(html_content)
@@ -132,7 +146,7 @@ folium_map = folium.Map(location=starting_location, zoom_start=starting_zoom, cr
 # populate map
 nelson = [-34.8265, -56.2651]
 uam = [-34.8192, -56.2639]
-icon_size = (25, 25)
+icon_size = (10, 10)
 
 folium.Marker(
     location=nelson,

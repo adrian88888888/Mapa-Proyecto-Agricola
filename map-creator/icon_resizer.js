@@ -1,6 +1,6 @@
 function resizeIcons() {
     var marker = document.getElementsByClassName('leaflet-marker-icon');
-    var zoom = map_2d7121202b175e2f1001820765164300.getZoom();
+    var zoom = map.getZoom();
     switch (zoom) {
         case 1:
             icon_size = 5;
@@ -67,10 +67,10 @@ function resizeIcons() {
     }
 }
 
-map_2d7121202b175e2f1001820765164300.on('zoomend', function() {
+map.on('zoomend', function() {
     resizeIcons();
 });
 
-map_2d7121202b175e2f1001820765164300.on('load', function() {
+map.on('load', function() {
     resizeIcons();
 });
