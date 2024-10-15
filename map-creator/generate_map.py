@@ -53,7 +53,7 @@ def add_clients_from_dataframe(mapa, dataframe):
                 # icon_name = 'contact red.png'
 
             icon_path = repo_path + '\map-creator\icons\\' + icon_name
-            icono_personalizado = folium.CustomIcon(icon_path, icon_size=(32, 32))
+            icono_personalizado = folium.CustomIcon(icon_path, icon_size=icon_size)
 
             link_wwp = 'https://wa.me/' + str(dataframe.iloc[each_row, wwp_col])
 
@@ -66,6 +66,16 @@ def add_clients_from_dataframe(mapa, dataframe):
 
 def letra_a_numero(letra):
     return ord(letra.lower()) - ord('a')
+
+def inject_script_into_html():
+    with open('map.html', 'r', encoding='utf-8') as file:
+        html_content = file.read()
+
+    script_tag = '<script src="icon_resizer.js"></script>'
+    html_content = html_content.replace('</body>', f'{script_tag}\n</body>')
+
+    with open('map.html', 'w', encoding='utf-8') as file:
+        file.write(html_content)
 
 # config
 map_output_name = 'map.html'
@@ -122,17 +132,18 @@ folium_map = folium.Map(location=starting_location, zoom_start=starting_zoom, cr
 # populate map
 nelson = [-34.8265, -56.2651]
 uam = [-34.8192, -56.2639]
+icon_size = (25, 25)
 
 folium.Marker(
     location=nelson,
     popup="Nelson",
-    icon=folium.CustomIcon(nelson_icon_path, icon_size=(32, 32)),
+    icon=folium.CustomIcon(nelson_icon_path, icon_size=icon_size),
 ).add_to(folium_map)
 
 folium.Marker(
     location=uam,
     popup="UAM",
-    icon=folium.CustomIcon(uam_icon_path, icon_size=(32, 64)),
+    icon=folium.CustomIcon(uam_icon_path, icon_size=icon_size),
 ).add_to(folium_map)
 
 add_clients_from_dataframe(folium_map, dataframe)
@@ -172,7 +183,7 @@ for place in googleplaces_data:
             icon_name = 'no-icon.png'
 
     icon_path = repo_path + r'\map-creator\icons\\' + icon_name
-    icono_personalizado = folium.CustomIcon(icon_path, icon_size=(32, 32))
+    icono_personalizado = folium.CustomIcon(icon_path, icon_size=icon_size)
 
     popup = 'Id: <br>' + place_id + '<br><br>Nombre: <br>' + name + '<br><br>' + '<a href="' + link_to_place + '" target="_blank">Abrir en Maps &boxbox;</a>' + '<br><br>Reseñas: <br>' + str(resenias) + '<br><br>Estrellas: <br>' + str(estrellas) + '<br><br>' + 'Horarios:<br>' + str(formatted_open_time)
     folium.Marker(
@@ -184,10 +195,184 @@ for place in googleplaces_data:
 # folium.plugins.AntPath(locations=rute_sayago, delay=2000, opacity=1, color='blue', weight=5, dash_array=[20, 30]).add_to(folium_map)
 # folium.plugins.AntPath(locations=rute_del_prado, delay=2000, opacity=1, color='green', weight=5, dash_array=[20, 30]).add_to(folium_map)
 
+# zona_central = [
+#     [-34.900926, -56.200132],
+#     [-34.906065, -56.199102],
+#     [-34.908669, -56.200304],
+#     [-34.910499, -56.196098],
+#     [-34.913526, -56.185713],
+#     [-34.913033, -56.178761],
+#     [-34.911836, -56.176186],
+#     [-34.903601, -56.173611],
+#     [-34.904657, -56.163397],
+#     [-34.913455, -56.160994],
+#     [-34.920986, -56.161852],
+#     [-34.91986, -56.147776],
+#     [-34.910218, -56.146746],
+#     [-34.906135, -56.134987],
+#     [-34.899518, -56.138163],
+#     [-34.897266, -56.15078],
+#     [-34.898181, -56.162109],
+#     [-34.896491, -56.166658],
+#     [-34.899518, -56.174212],
+#     [-34.900645, -56.188717],
+#     [-34.895576, -56.191292],
+#     [-34.900926, -56.200132]
+# ]
+
+# zona_avenida_italia = [
+#     [-34.868327, -56.131039],
+#     [-34.862271, -56.134901],
+#     [-34.862764, -56.140652],
+#     [-34.870651, -56.137991],
+#     [-34.874384, -56.14666],
+#     [-34.868257, -56.15593],
+#     [-34.874595, -56.162024],
+#     [-34.882059, -56.160564],
+#     [-34.884241, -56.154385],
+#     [-34.889662, -56.150179],
+#     [-34.890155, -56.139364],
+#     [-34.8998, -56.135845],
+#     [-34.905783, -56.12606],
+#     [-34.9017, -56.120825],
+#     [-34.891845, -56.112671],
+#     [-34.895576, -56.101427],
+#     [-34.886635, -56.087008],
+#     [-34.886846, -56.074905],
+#     [-34.883115, -56.0604],
+#     [-34.872201, -56.063147],
+#     [-34.86537, -56.045465],
+#     [-34.860651, -56.044865],
+#     [-34.859876, -56.057138],
+#     [-34.867764, -56.068039],
+#     [-34.874102, -56.075249],
+#     [-34.879524, -56.088724],
+#     [-34.882551, -56.094131],
+#     [-34.886142, -56.111383],
+#     [-34.884593, -56.1234],
+#     [-34.882059, -56.131039],
+#     [-34.877482, -56.135931],
+#     [-34.870651, -56.131039],
+#     [-34.867975, -56.11928],
+#     [-34.864384, -56.119623],
+#     [-34.868327, -56.131039]
+# ]
+
+# zona_sayago = [
+#     [-34.813662, -56.214123],
+#     [-34.826346, -56.233177],
+#     [-34.843676, -56.213264],
+#     [-34.848325, -56.213264],
+#     [-34.854665, -56.196098],
+#     [-34.865933, -56.199017],
+#     [-34.867764, -56.186829],
+#     [-34.856918, -56.156616],
+#     [-34.847903, -56.161766],
+#     [-34.843958, -56.187687],
+#     [-34.830432, -56.193352],
+#     [-34.818595, -56.19215],
+#     [-34.812958, -56.207771],
+#     [-34.813662, -56.214123]
+# ]
+
+# zona_102 = [
+#     [-34.74796, -56.106148],
+#     [-34.749088, -56.085033],
+#     [-34.759525, -56.09396],
+#     [-34.76573, -56.091728],
+#     [-34.775601, -56.08572],
+#     [-34.77687, -56.053104],
+#     [-34.782651, -56.055164],
+#     [-34.807038, -56.079025],
+#     [-34.801964, -56.091213],
+#     [-34.794775, -56.098766],
+#     [-34.792519, -56.107178],
+#     [-34.79999, -56.109238],
+#     [-34.804642, -56.124172],
+#     [-34.808729, -56.132069],
+#     [-34.81789, -56.132412],
+#     [-34.835927, -56.136875],
+#     [-34.835082, -56.146317],
+#     [-34.801682, -56.14357],
+#     [-34.812394, -56.152325],
+#     [-34.806192, -56.167088],
+#     [-34.799568, -56.160908],
+#     [-34.796043, -56.170692],
+#     [-34.783074, -56.158848],
+#     [-34.771935, -56.160908],
+#     [-34.74796, -56.106148]
+# ]
+
+# ruta_a_zona_102 = [
+#     [-34.793506, -56.168118],
+#     [-34.793365, -56.199875],
+#     [-34.781805, -56.233177],
+#     [-34.780959, -56.251545],
+#     [-34.771935, -56.273346],
+#     [-34.791109, -56.273689],
+#     [-34.824796, -56.250343],
+#     [-34.834377, -56.252747]
+# ]
+
+# ruta_a_avenida_italia = [
+#     [-34.828178, -56.263046],
+#     [-34.834941, -56.253433],
+#     [-34.850298, -56.253262],
+#     [-34.858609, -56.256866],
+#     [-34.863398, -56.254292],
+#     [-34.86706, -56.246052],
+#     [-34.873539, -56.238842],
+#     [-34.868891, -56.224079],
+#     [-34.874102, -56.211891],
+#     [-34.872693, -56.200905],
+#     [-34.871285, -56.190948],
+#     [-34.869454, -56.167088],
+#     [-34.868187, -56.162796],
+#     [-34.879594, -56.147346]
+# ]
+
+# ruta_a_zona_central = [
+#     [-34.874947, -56.211119],
+#     [-34.881566, -56.200905],
+#     [-34.885368, -56.197901],
+#     [-34.888818, -56.197643],
+#     [-34.891774, -56.195412],
+#     [-34.898533, -56.195154]
+# ]
+
+# ruta_a_sayago = [
+#     [-34.823307, -56.227384],
+#     [-34.818824, -56.235645],
+#     [-34.823105, -56.241353],
+#     [-34.825236, -56.249399]
+# ]
+
+# polyline = folium.PolyLine(locations=ruta_a_sayago, color="blue", weight=2.5)
+# polyline.add_to(folium_map)
+# polyline = folium.PolyLine(locations=ruta_a_zona_central, color="blue", weight=2.5)
+# polyline.add_to(folium_map)
+# polyline = folium.PolyLine(locations=ruta_a_avenida_italia, color="blue", weight=2.5)
+# polyline.add_to(folium_map)
+# polyline = folium.PolyLine(locations=ruta_a_zona_102, color="blue", weight=2.5)
+# polyline.add_to(folium_map)
+# polyline = folium.PolyLine(locations=zona_102, color="black", weight=2.5)
+# polyline.add_to(folium_map)
+# polyline = folium.PolyLine(locations=zona_sayago, color="black", weight=2.5)
+# polyline.add_to(folium_map)
+# polyline = folium.PolyLine(locations=zona_avenida_italia, color="black", weight=2.5)
+# polyline.add_to(folium_map)
+# polyline = folium.PolyLine(locations=zona_central, color="black", weight=2.5)
+# polyline.add_to(folium_map)
+
+# polilinea = folium.PolyLine(puntos, color="blue", weight=2.5, opacity=1, tooltip="Mi Polilínea")
+
 locate_control = LocateControl()
 locate_control.add_to(folium_map)
 Draw(export=True).add_to(folium_map)
 
 folium_map.save(map_path)
+
+inject_script_into_html()
+
 full_map_path = os.path.abspath(map_path)
 os.startfile(full_map_path)
