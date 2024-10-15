@@ -81,7 +81,7 @@ function onMapClick(e) {
     if (zoom >= 16) {
         var lat = e.latlng.lat;
         var lng = e.latlng.lng;
-        var whatsappLink = `https://wa.me/+59895930076?text=Adriano,%en%este%lugar%hay%un%cliente%nuevo:${lat},${lng}`;
+        var whatsappLink = `https://wa.me/+59895930076?text=Adriano, en estas coordenadas hay un cliente nuevo:${lat},${lng}`;
         var popupContent = `
             <div>
                 <a href="${whatsappLink}" target="_blank">Avisar a Adriano de un cliente nuevo en este punto</a>
