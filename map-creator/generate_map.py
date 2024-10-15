@@ -90,7 +90,7 @@ def inject_script_into_html():
     '''
     last_script_index = html_content.rfind('</script>')
 
-    script_tag = '<script src="icon_resizer.js"></script>'
+    script_tag = '<script src="script.js"></script>'
     
     if last_script_index != -1:
         html_content = (html_content[:last_script_index + len('</script>')] + 
@@ -152,6 +152,7 @@ dados_de_baja_por_cualquier_motivo = load_single_col_tsv_into_set(dados_de_baja_
 florerias_de_eventos_o_cementerios = load_single_col_tsv_into_set(florerias_de_eventos_o_cementerios_path)
 
 starting_zoom = 12
+icon_size = (15, 15)
 coords_plaza_ejercito = (-34.86304757940927, -56.169061198494575)
 starting_location = coords_plaza_ejercito
 
@@ -160,7 +161,6 @@ folium_map = folium.Map(location=starting_location, zoom_start=starting_zoom, cr
 # populate map
 nelson = [-34.8265, -56.2651]
 uam = [-34.8192, -56.2639]
-icon_size = (10, 10)
 
 folium.Marker(
     location=nelson,
@@ -204,7 +204,8 @@ for place in googleplaces_data:
         elif search_term == 'Floreria':
             icon_name = 'floreria.png'
         elif search_term == 'Feria':
-            icon_name = 'feria.png'
+            continue
+            # icon_name = 'feria.png'
         elif search_term == 'Vivero':
             icon_name = 'vivero.png'
         else:
