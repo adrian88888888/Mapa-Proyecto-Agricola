@@ -22,7 +22,7 @@ def load_single_col_tsv_into_set(file):
     return first_column_set
 
 def get_tuple_of_coords_from_string(string):
-    print(string)
+    # print(string)
     lat_str, lon_str = string.split(',')
     lat = float(lat_str)
     lon = float(lon_str)
@@ -214,7 +214,10 @@ for place in googleplaces_data:
     icon_path = repo_path + r'\map-creator\icons\\' + icon_name
     icono_personalizado = folium.CustomIcon(icon_path, icon_size=icon_size)
 
-    popup = 'Id: <br>' + place_id + '<br><br>Nombre: <br>' + name + '<br><br>' + '<a href="' + link_to_place + '" target="_blank">Abrir en Maps &boxbox;</a>' + '<br><br>Reseñas: <br>' + str(resenias) + '<br><br>Estrellas: <br>' + str(estrellas) + '<br><br>' + 'Horarios:<br>' + str(formatted_open_time)
+    wpp_message_borrar_punto = 'https://wa.me/+59895930076?text=Adriano, borra este punto: ' + place_id
+    wpp_message_marcar_punto_como_cliente = 'https://wa.me/+59895930076?text=Adriano, este punto ahora es cliente: ' + place_id
+
+    popup = 'Nombre: <br>' + name + '<br><br>' + '<a href="' + wpp_message_borrar_punto + '" target="_blank">🗑️Borrar punto</a>' + '<br><br>' + '<a href="' + wpp_message_marcar_punto_como_cliente + '" target="_blank">➕Marcar punto como cliente</a>' + '<br><br>' + '<a href="' + link_to_place + '" target="_blank">🗺️Abrir en Google Maps</a>' + '<br><br>' + '📝Reseñas: ' + str(resenias) + '<br><br>' + '⭐Estrellas: ' + str(estrellas) + '<br><br>' + '🕙Horarios:<br>' + str(formatted_open_time) + '<br>' + '⚙️Id: <br>' + place_id
     folium.Marker(
         location=[lat, lng],
         popup=folium.Popup(popup, max_width=3000),

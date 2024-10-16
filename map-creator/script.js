@@ -81,10 +81,12 @@ function onMapClick(e) {
     if (zoom >= 16) {
         var lat = e.latlng.lat;
         var lng = e.latlng.lng;
-        var whatsappLink = `https://wa.me/+59895930076?text=Adriano, en estas coordenadas hay un cliente nuevo:${lat},${lng}`;
+        var wwp_mesage_new_client = `https://wa.me/+59895930076?text=Adriano, en estas coordenadas hay un cliente nuevo:${lat},${lng}`;
+        var wwp_mesage_share_coords = `https://wa.me/+59895930076?text=${lat},${lng}`;
         var popupContent = `
             <div>
-                <a href="${whatsappLink}" target="_blank">Avisar a Adriano de un cliente nuevo en este punto</a>
+                <a href="${wwp_mesage_new_client}" target="_blank">➕Crear cliente en este punto</a><br><br>
+                <a href="${wwp_mesage_share_coords}" target="_blank">🔁Compartir este punto</a>
             </div>
         `;
         
