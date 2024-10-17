@@ -98,7 +98,7 @@ def load_single_col_tsv_into_set(file):
         first_column_set = {row[0] for row in tsvreader}
     return first_column_set
 
-def add_client_marker_from_dataframe(folium_map, dataframe):
+def add_markers_from_clients(dataframe, folium_map):
     rows, columns = dataframe.shape
     for each_row in range(rows):
         id = dataframe.iloc[each_row, id_col]
@@ -136,6 +136,59 @@ def add_client_marker_from_dataframe(folium_map, dataframe):
                         popup=popup_content,
                         icon=icono_personalizado
                         ).add_to(folium_map)
+    return folium_map
+
+def add_markers_from_google_maps(googleplaces_data, clients_df, folium_map):
+    for place in googleplaces_data:
+        name = place['name']
+        place_id = place['place_id']
+        lat = place['geometry']['location']['lat']
+        lng = place['geometry']['location']['lng']
+        link_to_place = place['url']
+        resenias = place.get('user_ratings_total', 0)
+        estrellas = place.get('rating')
+        search_term = place['additional_info']['search_term']
+        formatted_open_time = get_formatted_open_time(place_id, json_of_formatted_open_time)
+        # if place_id in clientes_macetas_de_albahaca:
+        #     icon_name = 'tick.png'
+            # continue
+        # elif place_id in dados_de_baja_por_cualquier_motivo:
+        #     icon_name = 'cancel.png'
+        if place_id in clients_df['Place ID'].values:
+            continue
+        if place_id in dados_de_baja_por_cualquier_motivo:
+            continue
+        elif place_id in florerias_de_eventos_o_cementerios:
+            continue
+        else:
+            if search_term == "Verduleria":
+                continue
+                # icon_name = 'verduleria.png'
+            elif search_term == 'Agropecuaria':
+                icon_name = 'agropecuaria.png'
+            elif search_term == 'Floreria':
+                icon_name = 'floreria.png'
+            elif search_term == 'Feria':
+                continue
+                # icon_name = 'feria.png'
+            elif search_term == 'Vivero':
+                icon_name = 'vivero.png'
+            else:
+                icon_name = 'no-icon.png'
+
+        icon_path = repo_path + r'\map-creator\icons\\' + icon_name
+        icono_personalizado = folium.CustomIcon(icon_path, icon_size=icon_size)
+
+        wpp_message_borrar_punto = 'https://wa.me/+59895930076?text=Adriano, borra este punto: ' + place_id
+        wpp_message_marcar_punto_como_cliente = 'https://wa.me/+59895930076?text=Adriano, este punto ahora es cliente: ' + place_id
+
+        popup = 'Nombre: <br>' + name + '<br><br>' + '<a href="' + wpp_message_borrar_punto + '" target="_blank">🗑️Borrar punto</a>' + '<br><br>' + '<a href="' + wpp_message_marcar_punto_como_cliente + '" target="_blank">➕Marcar punto como cliente</a>' + '<br><br>' + '<a href="' + link_to_place + '" target="_blank">🗺️Abrir en Google Maps</a>' + '<br><br>' + '📝Reseñas: ' + str(resenias) + '<br><br>' + '⭐Estrellas: ' + str(estrellas) + '<br><br>' + '🕙Horarios:<br>' + str(formatted_open_time) + '<br>' + '⚙️Id: <br>' + place_id + '<br><br>'
+        folium.Marker(
+            location=[lat, lng],
+            popup=folium.Popup(popup, max_width=3000),
+            icon=icono_personalizado
+            ).add_to(folium_map)
+    
     return folium_map
 
 def letra_a_numero(letra):
@@ -225,7 +278,6 @@ starting_location = coords_plaza_ejercito
 
 folium_map = folium.Map(location=starting_location, zoom_start=starting_zoom, crs='EPSG3857') # crs='EPSG3857' es para usar el mismo sistema de coordenadas q el de google maps
 
-# populate map
 nelson = [-34.8265, -56.2651]
 uam = [-34.8192, -56.2639]
 
@@ -268,55 +320,8 @@ frecuencia_de_compra_col = 2
 coords_col = 3
 place_id_col = 4
 
-add_client_marker_from_dataframe(folium_map, clients_df)
-
-for place in googleplaces_data:
-    name = place['name']
-    place_id = place['place_id']
-    lat = place['geometry']['location']['lat']
-    lng = place['geometry']['location']['lng']
-    link_to_place = place['url']
-    resenias = place.get('user_ratings_total', 0)
-    estrellas = place.get('rating')
-    search_term = place['additional_info']['search_term']
-    formatted_open_time = get_formatted_open_time(place_id, json_of_formatted_open_time)
-    # if place_id in clientes_macetas_de_albahaca:
-    #     icon_name = 'tick.png'
-        # continue
-    # elif place_id in dados_de_baja_por_cualquier_motivo:
-    #     icon_name = 'cancel.png'
-    if place_id in dados_de_baja_por_cualquier_motivo:
-        continue
-    elif place_id in florerias_de_eventos_o_cementerios:
-        continue
-    else:
-        if search_term == "Verduleria":
-            continue
-            # icon_name = 'verduleria.png'
-        elif search_term == 'Agropecuaria':
-            icon_name = 'agropecuaria.png'
-        elif search_term == 'Floreria':
-            icon_name = 'floreria.png'
-        elif search_term == 'Feria':
-            continue
-            # icon_name = 'feria.png'
-        elif search_term == 'Vivero':
-            icon_name = 'vivero.png'
-        else:
-            icon_name = 'no-icon.png'
-
-    icon_path = repo_path + r'\map-creator\icons\\' + icon_name
-    icono_personalizado = folium.CustomIcon(icon_path, icon_size=icon_size)
-
-    wpp_message_borrar_punto = 'https://wa.me/+59895930076?text=Adriano, borra este punto: ' + place_id
-    wpp_message_marcar_punto_como_cliente = 'https://wa.me/+59895930076?text=Adriano, este punto ahora es cliente: ' + place_id
-
-    popup = 'Nombre: <br>' + name + '<br><br>' + '<a href="' + wpp_message_borrar_punto + '" target="_blank">🗑️Borrar punto</a>' + '<br><br>' + '<a href="' + wpp_message_marcar_punto_como_cliente + '" target="_blank">➕Marcar punto como cliente</a>' + '<br><br>' + '<a href="' + link_to_place + '" target="_blank">🗺️Abrir en Google Maps</a>' + '<br><br>' + '📝Reseñas: ' + str(resenias) + '<br><br>' + '⭐Estrellas: ' + str(estrellas) + '<br><br>' + '🕙Horarios:<br>' + str(formatted_open_time) + '<br>' + '⚙️Id: <br>' + place_id
-    folium.Marker(
-        location=[lat, lng],
-        popup=folium.Popup(popup, max_width=3000),
-        icon=icono_personalizado
-        ).add_to(folium_map)
+folium_map = add_markers_from_clients(clients_df, folium_map)
+folium_map = add_markers_from_google_maps(googleplaces_data, clients_df, folium_map)
 
 locate_control = LocateControl()
 locate_control.add_to(folium_map)
