@@ -79,23 +79,24 @@ map.on('load', function() {
 function onMapClick(e) {
     var zoom = map.getZoom();
     if (zoom >= 16) {
-        var lat = e.latlng.lat;
-        var lng = e.latlng.lng;
+        var lat = e.latlng.lat.toFixed(7);
+        var lng = e.latlng.lng.toFixed(7);
         var coords = `${lat}, ${lng}`;
+        var googleMapsLink = `https://www.google.com/maps?q=${lat},${lng}`;
+        var googleMapsNavLink = `https://www.google.com/maps/dir/?api=1&destination=${lat},${lng}`;
         var popupContent = `
             <div>
-                <a href="#" onclick="navigator.clipboard.writeText('${coords}').then(() => { alert('Coordenadas copiadas'); }).catch(err => { console.error('Error al copiar', err); }); return false;">
-                    ✂️ Copiar coordenadas ✂️
+                <a href="#" onclick="navigator.clipboard.writeText('${coords}'); return false;">
+                    ✂️ Copiar Coordenadas
+                </a><br><br>
+                <a href="${googleMapsLink}" target="_blank">
+                    🗺️ Abrir en Google Maps
+                </a><br><br>
+                <a href="${googleMapsNavLink}" target="_blank">
+                    🚚 Obtener Indicaciones
                 </a>
             </div>
         `;
-        // var popupContent = `
-        //     <div>
-        //         <a href="#" onclick="navigator.clipboard.writeText('${coords}').catch(err => { console.error('Error al copiar', err); }); return false;">
-        //             ✂️ Copiar coordenadas ✂️
-        //         </a>
-        //     </div>
-        // `;
         // var wwp_mesage_new_client = `https://wa.me/+59895930076?text=Adriano, en estas coordenadas hay un cliente nuevo:${lat},${lng}`;
         // var wwp_mesage_share_coords = `https://wa.me/+59895930076?text=${lat},${lng}`;
         // var popupContent = `

@@ -122,7 +122,7 @@ def add_markers_from_clients(dataframe, folium_map):
                 continue
                 # icon = 'contact red.png'
 
-            current_directory = 'C:\Work in Progress\Repos en GitHub\Mapa-Proyecto-Agricola\map-creator'
+            current_directory = r'C:\Work in Progress\Repos en GitHub\Mapa-Proyecto-Agricola\map-creator'
             icon_path = os.path.join(current_directory, 'icons', icon)
             icono_personalizado = folium.CustomIcon(icon_path, icon_size=(icon_size))
 
@@ -179,10 +179,49 @@ def add_markers_from_google_maps(googleplaces_data, clients_df, folium_map):
         icon_path = repo_path + r'\map-creator\icons\\' + icon_name
         icono_personalizado = folium.CustomIcon(icon_path, icon_size=icon_size)
 
-        wpp_message_borrar_punto = 'https://wa.me/+59895930076?text=Adriano, borra este punto: ' + place_id
-        wpp_message_marcar_punto_como_cliente = 'https://wa.me/+59895930076?text=Adriano, este punto ahora es cliente: ' + place_id
+        # wpp_message_borrar_punto = 'https://wa.me/+59895930076?text=Adriano, borra este punto: ' + place_id
+        # wpp_message_marcar_punto_como_cliente = 'https://wa.me/+59895930076?text=Adriano, este punto ahora es cliente: ' + place_id
 
-        popup = 'Nombre: <br>' + name + '<br><br>' + '<a href="' + wpp_message_borrar_punto + '" target="_blank">🗑️Borrar punto</a>' + '<br><br>' + '<a href="' + wpp_message_marcar_punto_como_cliente + '" target="_blank">➕Marcar punto como cliente</a>' + '<br><br>' + '<a href="' + link_to_place + '" target="_blank">🗺️Abrir en Google Maps</a>' + '<br><br>' + '📝Reseñas: ' + str(resenias) + '<br><br>' + '⭐Estrellas: ' + str(estrellas) + '<br><br>' + '🕙Horarios:<br>' + str(formatted_open_time) + '<br>' + '⚙️Id: <br>' + place_id + '<br><br>'
+        lat = round(lat, 7)
+        lng = round(lng, 7)
+
+        coords = f"{lat}, {lng}"
+
+        google_maps_link = f"https://www.google.com/maps?q={lat},{lng}"
+        google_maps_nav_link = f"https://www.google.com/maps/dir/?api=1&destination={lat},{lng}"
+
+        popup = (
+            'Nombre: <br>' + name + '<br><br>' +
+            '<a href="#" onclick="navigator.clipboard.writeText(\'' + coords + '\'); return false;">✂️ Copiar Coordenadas</a>' + 
+            '<br><br>' +
+            '<a href="' + google_maps_link + '" target="_blank">🗺️ Abrir en Google Maps</a>' + 
+            '<br><br>' +
+            '<a href="' + google_maps_nav_link + '" target="_blank">🚚 Obtener Indicaciones</a>' +
+            '<br><br>' +
+            '📝 Reseñas: ' + str(resenias) + '<br><br>' +
+            '⭐ Estrellas: ' + str(estrellas) + '<br><br>' +
+            '🕙 Horarios:<br>' + str(formatted_open_time) + '<br>' +
+            '⚙️ Id: <br>' + place_id + '<br><br>'
+        )
+
+        # version vieja q puede servir:
+        # wpp_message_borrar_punto = 'https://wa.me/+59895930076?text=Adriano, borra este punto: ' + place_id
+        # wpp_message_marcar_punto_como_cliente = 'https://wa.me/+59895930076?text=Adriano, este punto ahora es cliente: ' + place_id
+
+        # popup = (
+        #     'Nombre: <br>' + name + '<br><br>' +
+        #     '<a href="' + wpp_message_borrar_punto + '" target="_blank">🗑️Borrar punto</a>' + 
+        #     '<br><br>' +
+        #     '<a href="' + wpp_message_marcar_punto_como_cliente + '" target="_blank">➕Marcar punto como cliente</a>' + 
+        #     '<br><br>' +
+        #     '<a href="' + link_to_place + '" target="_blank">🗺️Abrir en Google Maps</a>' + 
+        #     '<br><br>' +
+        #     '📝Reseñas: ' + str(resenias) + '<br><br>' +
+        #     '⭐Estrellas: ' + str(estrellas) + '<br><br>' +
+        #     '🕙Horarios:<br>' + str(formatted_open_time) + '<br>' +
+        #     '⚙️Id: <br>' + place_id + '<br><br>'
+        # )
+
         folium.Marker(
             location=[lat, lng],
             popup=folium.Popup(popup, max_width=3000),
