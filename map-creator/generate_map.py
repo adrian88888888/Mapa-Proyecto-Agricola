@@ -169,8 +169,8 @@ def add_markers_from_google_maps(googleplaces_data, clients_df, folium_map):
             elif search_term == 'Floreria':
                 icon_name = 'floreria.png'
             elif search_term == 'Feria':
-                continue
-                # icon_name = 'feria.png'
+                # continue
+                icon_name = 'feria.png'
             elif search_term == 'Vivero':
                 icon_name = 'vivero.png'
             else:

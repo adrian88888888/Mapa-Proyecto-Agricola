@@ -81,14 +81,22 @@ function onMapClick(e) {
     if (zoom >= 16) {
         var lat = e.latlng.lat;
         var lng = e.latlng.lng;
-        var wwp_mesage_new_client = `https://wa.me/+59895930076?text=Adriano, en estas coordenadas hay un cliente nuevo:${lat},${lng}`;
-        var wwp_mesage_share_coords = `https://wa.me/+59895930076?text=${lat},${lng}`;
+        var coords = `${lat}, ${lng}`;
         var popupContent = `
             <div>
-                <a href="${wwp_mesage_new_client}" target="_blank">➕Crear cliente en este punto</a><br><br>
-                <a href="${wwp_mesage_share_coords}" target="_blank">🔁Compartir este punto</a>
+                <a href="#" onclick="navigator.clipboard.writeText('${coords}').catch(err => { console.error('Error al copiar', err); }); return false;">
+                    ✂️ Copiar coordenadas ✂️
+                </a>
             </div>
         `;
+        // var wwp_mesage_new_client = `https://wa.me/+59895930076?text=Adriano, en estas coordenadas hay un cliente nuevo:${lat},${lng}`;
+        // var wwp_mesage_share_coords = `https://wa.me/+59895930076?text=${lat},${lng}`;
+        // var popupContent = `
+        //     <div>
+        //         <a href="${wwp_mesage_new_client}" target="_blank">➕Crear cliente en este punto</a><br><br>
+        //         <a href="${wwp_mesage_share_coords}" target="_blank">🔁Compartir este punto</a>
+        //     </div>
+        // `;
         
         var popup = L.popup()
             .setLatLng(e.latlng)
