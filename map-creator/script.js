@@ -84,11 +84,18 @@ function onMapClick(e) {
         var coords = `${lat}, ${lng}`;
         var popupContent = `
             <div>
-                <a href="#" onclick="navigator.clipboard.writeText('${coords}').catch(err => { console.error('Error al copiar', err); }); return false;">
+                <a href="#" onclick="navigator.clipboard.writeText('${coords}').then(() => { alert('Coordenadas copiadas'); }).catch(err => { console.error('Error al copiar', err); }); return false;">
                     ✂️ Copiar coordenadas ✂️
                 </a>
             </div>
         `;
+        // var popupContent = `
+        //     <div>
+        //         <a href="#" onclick="navigator.clipboard.writeText('${coords}').catch(err => { console.error('Error al copiar', err); }); return false;">
+        //             ✂️ Copiar coordenadas ✂️
+        //         </a>
+        //     </div>
+        // `;
         // var wwp_mesage_new_client = `https://wa.me/+59895930076?text=Adriano, en estas coordenadas hay un cliente nuevo:${lat},${lng}`;
         // var wwp_mesage_share_coords = `https://wa.me/+59895930076?text=${lat},${lng}`;
         // var popupContent = `
