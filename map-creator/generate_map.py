@@ -105,29 +105,30 @@ def add_markers_from_clients_df(dataframe, folium_map):
             coords_string = dataframe.iloc[each_row, coords_col]
             if coords_string:
                 coords = get_tuple_of_coords_from_string(coords_string)
-                lat, lon = coords
-                lat = round(lat, 7)
-                lon = round(lon, 7)
+                if coords:
+                    lat, lon = coords
+                    lat = round(lat, 7)
+                    lon = round(lon, 7)
             
-            icon = 'contact green.png'
-            current_directory = r'C:\Work in Progress\Repos en GitHub\Mapa-Proyecto-Agricola\map-creator'
-            icon_path = os.path.join(current_directory, 'icons', icon)
-            icono_personalizado = folium.CustomIcon(icon_path, icon_size=(icon_size))
+                    icon = 'contact green.png'
+                    current_directory = r'C:\Work in Progress\Repos en GitHub\Mapa-Proyecto-Agricola\map-creator'
+                    icon_path = os.path.join(current_directory, 'icons', icon)
+                    icono_personalizado = folium.CustomIcon(icon_path, icon_size=(icon_size))
 
-            phone_number = str(dataframe.iloc[each_row, wwp_col])
-            if phone_number:
-                link_wwp = 'https://wa.me/' + phone_number
-                popup_content = str(dataframe.iloc[each_row, id_col]) + '<br>' + '<a href=' + link_wwp + '>Abrir Chat 💬</a>'
-            else:
-                popup_content = str(dataframe.iloc[each_row, id_col])
-            
-            popup_content = folium.Popup(popup_content, max_width=300)
+                    phone_number = str(dataframe.iloc[each_row, wwp_col])
+                    if phone_number:
+                        link_wwp = 'https://wa.me/' + phone_number
+                        popup_content = str(dataframe.iloc[each_row, id_col]) + '<br>' + '<a href=' + link_wwp + '>Abrir Chat 💬</a>'
+                    else:
+                        popup_content = str(dataframe.iloc[each_row, id_col])
+                    
+                    popup_content = folium.Popup(popup_content, max_width=300)
 
-            folium.Marker(
-                        location=coords,
-                        popup=popup_content,
-                        icon=icono_personalizado
-                        ).add_to(folium_map)
+                    folium.Marker(
+                                location=coords,
+                                popup=popup_content,
+                                icon=icono_personalizado
+                                ).add_to(folium_map)
     return folium_map
 
 def format_phone_number(phone_number):
