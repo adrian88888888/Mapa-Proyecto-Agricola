@@ -63,12 +63,6 @@ def get_a1_notation_section_by_cropping_raw_data(data, a1_notation):
 
     return cropped_data
 
-def transformar_telefono(telefono):
-    if pd.isna(telefono):
-        return ''
-    else:
-        return '+598' + telefono[:8].replace('-', '')
-
 def get_clients_df(spreadsheet, dataframe_mapping):
     worksheet = spreadsheet.worksheet(dataframe_mapping['sheetname'])
     raw_data = worksheet.get_all_values(value_render_option='UNFORMATTED_VALUE')
@@ -79,11 +73,13 @@ def get_clients_df(spreadsheet, dataframe_mapping):
 
     df = asign_dtype_to_each_col(df, dataframe_mapping['headers_and_dtypes'])
 
-    columnas_deseadas = ['🏷️ID', '💬WhatsApp', '🛒Frecuencia de Compra', '🗺️Coordenadas', 'Place ID']
+    columnas_deseadas = ['🏷️Identificador', '💬Wpp', '🗺️Coordenadas']
     df = df[columnas_deseadas].copy()
     df = df.replace('', np.nan)
-    df = df.dropna(subset=['🗺️Coordenadas'])
-    df['💬WhatsApp'] = df['💬WhatsApp'].apply(transformar_telefono)
+    df = df.dropna(how='all')
+    df = df.replace(np.nan, '')
+    df['💬Wpp'] = df['💬Wpp'].apply(format_phone_number)
+    print(df.to_string())
 
     return df
 
@@ -98,37 +94,33 @@ def load_single_col_tsv_into_set(file):
         first_column_set = {row[0] for row in tsvreader}
     return first_column_set
 
-def add_markers_from_clients(dataframe, folium_map):
+def add_markers_from_clients_df(dataframe, folium_map):
     rows, columns = dataframe.shape
     for each_row in range(rows):
         id = dataframe.iloc[each_row, id_col]
-        if not pd.isna(id):
+        if id:
             if 'UAM' in id:
                 continue
 
             coords_string = dataframe.iloc[each_row, coords_col]
-            if not pd.isna(coords_string):
+            if coords_string:
                 coords = get_tuple_of_coords_from_string(coords_string)
                 lat, lon = coords
-
-            frecuencia_de_compra = dataframe.iloc[each_row, frecuencia_de_compra_col]
-            if frecuencia_de_compra == '1-Frecuente':
-                icon = 'contact green.png'
-            elif frecuencia_de_compra == '2-Esporadico':
-                icon = 'contact yellow.png'
-            elif frecuencia_de_compra == '3-No Establecida':
-                icon = 'contact gray.png'
-            elif frecuencia_de_compra == '4-Muy Esporadico':
-                continue
-                # icon = 'contact red.png'
-
+                lat = round(lat, 7)
+                lon = round(lon, 7)
+            
+            icon = 'contact green.png'
             current_directory = r'C:\Work in Progress\Repos en GitHub\Mapa-Proyecto-Agricola\map-creator'
             icon_path = os.path.join(current_directory, 'icons', icon)
             icono_personalizado = folium.CustomIcon(icon_path, icon_size=(icon_size))
 
-            link_wwp = 'https://wa.me/' + str(dataframe.iloc[each_row, wwp_col])
-
-            popup_content = str(dataframe.iloc[each_row, id_col]) + '<br>' + '<a href=' + link_wwp + '>Abrir Chat 💬</a>'
+            phone_number = str(dataframe.iloc[each_row, wwp_col])
+            if phone_number:
+                link_wwp = 'https://wa.me/' + phone_number
+                popup_content = str(dataframe.iloc[each_row, id_col]) + '<br>' + '<a href=' + link_wwp + '>Abrir Chat 💬</a>'
+            else:
+                popup_content = str(dataframe.iloc[each_row, id_col])
+            
             popup_content = folium.Popup(popup_content, max_width=300)
 
             folium.Marker(
@@ -138,12 +130,20 @@ def add_markers_from_clients(dataframe, folium_map):
                         ).add_to(folium_map)
     return folium_map
 
-def add_markers_from_google_maps(googleplaces_data, clients_df, folium_map):
-    for place in googleplaces_data:
+def format_phone_number(phone_number):
+    if phone_number == '':
+        return ''
+    else:
+        return '+598' + phone_number[:8].replace('-', '')
+
+def add_markers_from_google_maps(google_maps_json_data, clients_df, json_of_formatted_open_time, folium_map):
+    for place in google_maps_json_data:
         name = place['name']
         place_id = place['place_id']
         lat = place['geometry']['location']['lat']
         lng = place['geometry']['location']['lng']
+        lat = round(lat, 7)
+        lng = round(lng, 7)
         link_to_place = place['url']
         resenias = place.get('user_ratings_total', 0)
         estrellas = place.get('rating')
@@ -154,8 +154,8 @@ def add_markers_from_google_maps(googleplaces_data, clients_df, folium_map):
             # continue
         # elif place_id in dados_de_baja_por_cualquier_motivo:
         #     icon_name = 'cancel.png'
-        if place_id in clients_df['Place ID'].values:
-            continue
+        # if place_id in clients_df['Place ID'].values:
+        #     continue
         if place_id in dados_de_baja_por_cualquier_motivo:
             continue
         elif place_id in florerias_de_eventos_o_cementerios:
@@ -182,9 +182,6 @@ def add_markers_from_google_maps(googleplaces_data, clients_df, folium_map):
         # wpp_message_borrar_punto = 'https://wa.me/+59895930076?text=Adriano, borra este punto: ' + place_id
         # wpp_message_marcar_punto_como_cliente = 'https://wa.me/+59895930076?text=Adriano, este punto ahora es cliente: ' + place_id
 
-        lat = round(lat, 7)
-        lng = round(lng, 7)
-
         coords = f"{lat}, {lng}"
 
         google_maps_link = f"https://www.google.com/maps?q={lat},{lng}"
@@ -200,8 +197,8 @@ def add_markers_from_google_maps(googleplaces_data, clients_df, folium_map):
             '<br><br>' +
             '📝 Reseñas: ' + str(resenias) + '<br><br>' +
             '⭐ Estrellas: ' + str(estrellas) + '<br><br>' +
-            '🕙 Horarios:<br>' + str(formatted_open_time) + '<br>' +
-            '⚙️ Id: <br>' + place_id + '<br><br>'
+            '🕙 Horarios:<br>' + str(formatted_open_time) + '<br>'
+            # '⚙️ Id: <br>' + place_id + '<br><br>'
         )
 
         # version vieja q puede servir:
@@ -270,43 +267,35 @@ def inject_script_into_html():
     with open('map.html', 'w', encoding='utf-8') as file:
         file.write(html_content)
 
-# config
-map_output_name = 'map.html'
-repo_path = r'C:\Work in Progress\Repos en GitHub\Mapa-Proyecto-Agricola'
+dataframe_mapping = {
+    'sheetname' : '🤝Clientes',
+    'A1_notation': 'A2:G',
+    'headers_and_dtypes': {
+        '🏷️Identificador':              'str',
+        '👤Nombre':                     'str',
+        '🏪Local':                      'str',
+        '📍Direccion':                   'str',
+        '💬Wpp':                        'str',
+        '🗺️Coordenadas':                'str',
+    }
+}
 
-# paths
-# map
-map_path = os.path.join(repo_path, 'map-creator', map_output_name)
-# data
-clientes_database_path                  = repo_path + r'\map-creator\data\from-google-sheets-clientes-database\using tsv + pandas\Administración Agricola - 🤝Clientes.tsv'
+map_filename = 'map.html'
+repo_path = r'C:\Work in Progress\Repos en GitHub\Mapa-Proyecto-Agricola'
+map_path = os.path.join(repo_path, 'map-creator', map_filename)
 data_from_googleplaces_path             = repo_path + r'\map-creator\data\from-google-places\json_from_googleplaces.json'
 formatted_open_time_path                = repo_path + r'\map-creator\data\from-google-places\formatted_open_time.json'
-clientes_macetas_de_albahaca_path       = repo_path + r'\map-creator\data\agrupando-lugares\potenciales clientes para macetas de albahaca.tsv'
 dados_de_baja_por_cualquier_motivo_path = repo_path + r'\map-creator\data\agrupando-lugares\dados de baja por cualquier motivo.tsv'
 florerias_de_eventos_o_cementerios_path = repo_path + r'\map-creator\data\agrupando-lugares\florerias de eventos o cementerios.tsv'
-polyline_rute_sayago_path               = repo_path + r'\map-creator\data\rutas\ruta_sayago\polilinea ruta.json'
-polyline_rute_del_prado_path            = repo_path + r'\map-creator\data\rutas\ruta_del_prado\polilinea ruta.json'
-# icons
 nelson_icon_path    = repo_path + r'\map-creator\icons\nelson.png'
 uam_icon_path       = repo_path + r'\map-creator\icons\uam.png'
 
-# load data
 with open(data_from_googleplaces_path, 'r') as file:
-    googleplaces_data = json.load(file)
+    google_maps_json_data = json.load(file)
 
 with open(formatted_open_time_path, 'r') as file:
     json_of_formatted_open_time = json.load(file)
 
-with open(polyline_rute_sayago_path, 'r') as file:
-    rute_sayago = json.load(file)
-
-with open(polyline_rute_del_prado_path, 'r') as file:
-    rute_del_prado = json.load(file)
-
-dataframe = pd.read_csv(clientes_database_path, sep='\t')
-dataframe = dataframe.drop(index=[0, 1]).reset_index(drop=True)
-
-clientes_macetas_de_albahaca = load_single_col_tsv_into_set(clientes_macetas_de_albahaca_path)
 dados_de_baja_por_cualquier_motivo = load_single_col_tsv_into_set(dados_de_baja_por_cualquier_motivo_path)
 florerias_de_eventos_o_cementerios = load_single_col_tsv_into_set(florerias_de_eventos_o_cementerios_path)
 
@@ -332,35 +321,17 @@ folium.Marker(
     icon=folium.CustomIcon(uam_icon_path, icon_size=icon_size),
 ).add_to(folium_map)
 
-dataframe_mapping = {
-    'sheetname' : '🤝Clientes',
-    'A1_notation': 'A2:I',
-    'headers_and_dtypes': {
-        '🏷️ID':                         'str',
-        '💬Chat':                        'str',
-        '👤Nombre':                      'str',
-        '🏪Local':                       'str',
-        '📍Direccion':                   'str',
-        '💬WhatsApp':                    'str',
-        '🛒Frecuencia de Compra':        'str',
-        '🗺️Coordenadas':                'str',
-        'Place ID':                     'str',
-    }
-}
-
-creds = get_google_sheets_credentials()
+credentials = get_google_sheets_credentials()
 sheet_id = '1VnMDV-mMQKzDLg0i7eU_Gv7mHsb60mGNlu0h4RJrHZ0'
-spreadsheet = authenticate_and_get_spreadsheet(sheet_id, creds)
+spreadsheet = authenticate_and_get_spreadsheet(sheet_id, credentials)
 clients_df = get_clients_df(spreadsheet, dataframe_mapping)
 
 id_col = 0
 wwp_col = 1
-frecuencia_de_compra_col = 2
-coords_col = 3
-place_id_col = 4
+coords_col = 2
 
-folium_map = add_markers_from_clients(clients_df, folium_map)
-folium_map = add_markers_from_google_maps(googleplaces_data, clients_df, folium_map)
+folium_map = add_markers_from_clients_df(clients_df, folium_map)
+folium_map = add_markers_from_google_maps(google_maps_json_data, clients_df, json_of_formatted_open_time, folium_map)
 
 locate_control = LocateControl()
 locate_control.add_to(folium_map)
