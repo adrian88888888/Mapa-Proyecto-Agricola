@@ -135,7 +135,7 @@ def format_phone_number(phone_number):
     if phone_number == '':
         return ''
     else:
-        return '+598' + phone_number[:8].replace('-', '')
+        return '598' + phone_number[:8].replace('-', '')
 
 def add_markers_from_google_maps(google_maps_json_data, clients_df, json_of_formatted_open_time, folium_map):
     for place in google_maps_json_data:
