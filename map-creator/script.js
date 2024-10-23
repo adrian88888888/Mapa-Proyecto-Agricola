@@ -21,31 +21,31 @@ function resizeIcons() {
             icon_size = 5;
             break;
         case 7:
-            icon_size = 10;
+            icon_size = 8;
             break;
         case 8:
-            icon_size = 10;
+            icon_size = 8;
             break;
         case 9:
-            icon_size = 10;
+            icon_size = 8;
             break;
         case 10:
-            icon_size = 10;
+            icon_size = 8;
             break;
         case 11:
-            icon_size = 10;
+            icon_size = 8;
             break;
         case 12:
-            icon_size = 15;
+            icon_size = 10;
             break;
         case 13:
-            icon_size = 23;
+            icon_size = 15;
             break;
         case 14:
-            icon_size = 30;
+            icon_size = 25;
             break;
         case 15:
-            icon_size = 33;
+            icon_size = 29;
             break;
         case 16:
             icon_size = 35;

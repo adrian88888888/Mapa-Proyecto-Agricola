@@ -79,7 +79,7 @@ def get_clients_df(spreadsheet, dataframe_mapping):
     df = df.dropna(how='all')
     df = df.replace(np.nan, '')
     df['💬Wpp'] = df['💬Wpp'].apply(format_phone_number)
-    print(df.to_string())
+    # print(df.to_string())
 
     return df
 
@@ -113,7 +113,7 @@ def add_markers_from_clients_df(dataframe, folium_map):
                     icon = 'contact green.png'
                     current_directory = r'C:\Work in Progress\Repos en GitHub\Mapa-Proyecto-Agricola\map-creator'
                     icon_path = os.path.join(current_directory, 'icons', icon)
-                    icono_personalizado = folium.CustomIcon(icon_path, icon_size=(icon_size))
+                    icono_personalizado = folium.CustomIcon(icon_path, icon_size=(starting_icon_size))
 
                     phone_number = str(dataframe.iloc[each_row, wwp_col])
                     if phone_number:
@@ -150,21 +150,17 @@ def add_markers_from_google_maps(google_maps_json_data, clients_df, json_of_form
         estrellas = place.get('rating')
         search_term = place['additional_info']['search_term']
         formatted_open_time = get_formatted_open_time(place_id, json_of_formatted_open_time)
-        # if place_id in clientes_macetas_de_albahaca:
-        #     icon_name = 'tick.png'
-            # continue
-        # elif place_id in dados_de_baja_por_cualquier_motivo:
-        #     icon_name = 'cancel.png'
-        # if place_id in clients_df['Place ID'].values:
-        #     continue
-        if place_id in dados_de_baja_por_cualquier_motivo:
+        google_place_coords = str(lat) + ', ' + str(lng)
+        
+        if is_in_serie(google_place_coords, clients_df['🗺️Coordenadas']):
             continue
-        elif place_id in florerias_de_eventos_o_cementerios:
+        if google_place_coords in coordenadas_dadas_de_baja_por_cualquier_motivo:
+            # icon_name = 'cancel.png'
             continue
         else:
             if search_term == "Verduleria":
-                continue
                 # icon_name = 'verduleria.png'
+                continue
             elif search_term == 'Agropecuaria':
                 icon_name = 'agropecuaria.png'
             elif search_term == 'Floreria':
@@ -178,7 +174,7 @@ def add_markers_from_google_maps(google_maps_json_data, clients_df, json_of_form
                 icon_name = 'no-icon.png'
 
         icon_path = repo_path + r'\map-creator\icons\\' + icon_name
-        icono_personalizado = folium.CustomIcon(icon_path, icon_size=icon_size)
+        icono_personalizado = folium.CustomIcon(icon_path, icon_size=starting_icon_size)
 
         # wpp_message_borrar_punto = 'https://wa.me/+59895930076?text=Adriano, borra este punto: ' + place_id
         # wpp_message_marcar_punto_como_cliente = 'https://wa.me/+59895930076?text=Adriano, este punto ahora es cliente: ' + place_id
@@ -268,6 +264,9 @@ def inject_script_into_html():
     with open('map.html', 'w', encoding='utf-8') as file:
         file.write(html_content)
 
+def is_in_serie(search_term, serie):
+    return serie.apply(lambda lista: search_term in lista).any()
+
 dataframe_mapping = {
     'sheetname' : '🤝Clientes',
     'A1_notation': 'A2:G',
@@ -284,10 +283,9 @@ dataframe_mapping = {
 map_filename = 'map.html'
 repo_path = r'C:\Work in Progress\Repos en GitHub\Mapa-Proyecto-Agricola'
 map_path = os.path.join(repo_path, 'map-creator', map_filename)
-data_from_googleplaces_path             = repo_path + r'\map-creator\data\from-google-places\json_from_googleplaces.json'
-formatted_open_time_path                = repo_path + r'\map-creator\data\from-google-places\formatted_open_time.json'
-dados_de_baja_por_cualquier_motivo_path = repo_path + r'\map-creator\data\agrupando-lugares\dados de baja por cualquier motivo.tsv'
-florerias_de_eventos_o_cementerios_path = repo_path + r'\map-creator\data\agrupando-lugares\florerias de eventos o cementerios.tsv'
+data_from_googleplaces_path                         = repo_path + r'\map-creator\data\from-google-places\json_from_googleplaces.json'
+formatted_open_time_path                            = repo_path + r'\map-creator\data\from-google-places\formatted_open_time.json'
+coordenadas_dadas_de_baja_por_cualquier_motivo_path = repo_path + r'\map-creator\data\coordenadas_dadas_de_baja_por_cualquier_motivo.tsv'
 nelson_icon_path    = repo_path + r'\map-creator\icons\nelson.png'
 uam_icon_path       = repo_path + r'\map-creator\icons\uam.png'
 
@@ -297,11 +295,10 @@ with open(data_from_googleplaces_path, 'r') as file:
 with open(formatted_open_time_path, 'r') as file:
     json_of_formatted_open_time = json.load(file)
 
-dados_de_baja_por_cualquier_motivo = load_single_col_tsv_into_set(dados_de_baja_por_cualquier_motivo_path)
-florerias_de_eventos_o_cementerios = load_single_col_tsv_into_set(florerias_de_eventos_o_cementerios_path)
+coordenadas_dadas_de_baja_por_cualquier_motivo = load_single_col_tsv_into_set(coordenadas_dadas_de_baja_por_cualquier_motivo_path)
 
 starting_zoom = 12
-icon_size = (15, 15)
+starting_icon_size = (10, 10)
 coords_plaza_ejercito = (-34.86304757940927, -56.169061198494575)
 starting_location = coords_plaza_ejercito
 
@@ -313,13 +310,13 @@ uam = [-34.8192, -56.2639]
 folium.Marker(
     location=nelson,
     popup="Nelson",
-    icon=folium.CustomIcon(nelson_icon_path, icon_size=icon_size),
+    icon=folium.CustomIcon(nelson_icon_path, icon_size=starting_icon_size),
 ).add_to(folium_map)
 
 folium.Marker(
     location=uam,
     popup="UAM",
-    icon=folium.CustomIcon(uam_icon_path, icon_size=icon_size),
+    icon=folium.CustomIcon(uam_icon_path, icon_size=starting_icon_size),
 ).add_to(folium_map)
 
 credentials = get_google_sheets_credentials()
@@ -331,8 +328,8 @@ id_col = 0
 wwp_col = 1
 coords_col = 2
 
-folium_map = add_markers_from_clients_df(clients_df, folium_map)
 folium_map = add_markers_from_google_maps(google_maps_json_data, clients_df, json_of_formatted_open_time, folium_map)
+folium_map = add_markers_from_clients_df(clients_df, folium_map)
 
 locate_control = LocateControl()
 locate_control.add_to(folium_map)
