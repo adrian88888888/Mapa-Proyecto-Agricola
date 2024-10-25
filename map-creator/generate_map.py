@@ -115,13 +115,14 @@ def add_markers_from_clients_df(dataframe, folium_map):
                     icon_path = os.path.join(current_directory, 'icons', icon)
                     icono_personalizado = folium.CustomIcon(icon_path, icon_size=(starting_icon_size))
 
-                    phone_number = str(dataframe.iloc[each_row, wwp_col])
-                    if phone_number:
-                        link_wwp = 'https://wa.me/' + phone_number
-                        popup_content = str(dataframe.iloc[each_row, id_col]) + '<br>' + '<a href=' + link_wwp + '>Abrir Chat 💬</a>'
-                    else:
-                        popup_content = str(dataframe.iloc[each_row, id_col])
+                    # phone_number = str(dataframe.iloc[each_row, wwp_col])
+                    # if phone_number:
+                    #     link_wwp = 'https://wa.me/' + phone_number
+                    #     popup_content = str(dataframe.iloc[each_row, id_col]) + '<br>' + '<a href=' + link_wwp + '>Abrir Chat 💬</a>'
+                    # else:
+                    #     popup_content = str(dataframe.iloc[each_row, id_col])
                     
+                    popup_content = str(dataframe.iloc[each_row, id_col])
                     popup_content = folium.Popup(popup_content, max_width=300)
 
                     folium.Marker(
