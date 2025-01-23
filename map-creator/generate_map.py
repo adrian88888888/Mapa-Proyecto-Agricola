@@ -73,7 +73,7 @@ def get_clients_df(spreadsheet, dataframe_mapping):
 
     df = asign_dtype_to_each_col(df, dataframe_mapping['headers_and_dtypes'])
 
-    columnas_deseadas = ['🏷️Identificador', '💬Wpp', '🗺️Coordenadas']
+    columnas_deseadas = ['🏷️ID', '💬Wpp', '🗺️Coordenadas']
     df = df[columnas_deseadas].copy()
     df = df.replace('', np.nan)
     df = df.dropna(how='all')
@@ -268,11 +268,11 @@ def inject_script_into_html():
 def is_in_serie(search_term, serie):
     return serie.apply(lambda lista: search_term in lista).any()
 
-dataframe_mapping = {
+clients_dataframe_mapping = {
     'sheetname' : '🤝Clientes',
-    'A1_notation': 'A2:G',
+    'A1_notation': 'B2:G',
     'headers_and_dtypes': {
-        '🏷️Identificador':              'str',
+        '🏷️ID':              'str',
         '👤Nombre':                     'str',
         '🏪Local':                      'str',
         '📍Direccion':                   'str',
@@ -321,9 +321,10 @@ folium.Marker(
 ).add_to(folium_map)
 
 credentials = get_google_sheets_credentials()
-sheet_id = '1VnMDV-mMQKzDLg0i7eU_Gv7mHsb60mGNlu0h4RJrHZ0'
+sheet_id = '1MgBLt4BwO23ua9Y3JM1ZE02hQYbhbNRoGtmnDKmjj2k'
 spreadsheet = authenticate_and_get_spreadsheet(sheet_id, credentials)
-clients_df = get_clients_df(spreadsheet, dataframe_mapping)
+clients_df = get_clients_df(spreadsheet, clients_dataframe_mapping)
+# suppliers_df = get_suppliers_df(spreadsheet, suppliers_dataframe_mapping)
 
 id_col = 0
 wwp_col = 1
