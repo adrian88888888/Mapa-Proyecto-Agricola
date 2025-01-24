@@ -121,9 +121,10 @@ def add_markers_from_clients_df(dataframe, folium_map):
                     #     popup_content = str(dataframe.iloc[each_row, id_col]) + '<br>' + '<a href=' + link_wwp + '>Abrir Chat 💬</a>'
                     # else:
                     #     popup_content = str(dataframe.iloc[each_row, id_col])
-                    
+                    google_maps_nav_link = f"https://www.google.com/maps/dir/?api=1&destination={lat},{lon}"
                     popup_content = str(dataframe.iloc[each_row, id_col])
-                    popup_content = folium.Popup(popup_content, max_width=300)
+                    popup_content += f'<br><a href="{google_maps_nav_link}" target="_blank">🚚 Obtener Indicaciones</a>'
+                    popup = folium.Popup(popup_content, max_width=300)
 
                     folium.Marker(
                                 location=coords,
