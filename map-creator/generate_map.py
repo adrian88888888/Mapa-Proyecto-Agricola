@@ -331,12 +331,12 @@ id_col = 0
 wwp_col = 1
 coords_col = 2
 
-folium_map = add_markers_from_google_maps(google_maps_json_data, clients_df, json_of_formatted_open_time, folium_map)
+# folium_map = add_markers_from_google_maps(google_maps_json_data, clients_df, json_of_formatted_open_time, folium_map)
 folium_map = add_markers_from_clients_df(clients_df, folium_map)
 
 locate_control = LocateControl()
 locate_control.add_to(folium_map)
-# Draw(export=True).add_to(folium_map) # ===>>> descomentar para rayar el mapa
+Draw(export=True).add_to(folium_map) # ===>>> descomentar para rayar el mapa
 
 folium_map.save(map_path)
 
