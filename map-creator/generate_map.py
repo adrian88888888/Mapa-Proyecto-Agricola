@@ -269,6 +269,7 @@ def inject_script_into_html():
 def is_in_serie(search_term, serie):
     return serie.apply(lambda lista: search_term in lista).any()
 
+
 clients_dataframe_mapping = {
     'sheetname' : '🤝Clientes',
     'A1_notation': 'B2:G',
@@ -281,7 +282,7 @@ clients_dataframe_mapping = {
         '🗺️Coordenadas':                'str',
     }
 }
-
+sheet_id = '1E0plKQ7NhWHtP569QY6ksjLQXrHXKyBqfJUPn3Iw38o'
 map_filename = 'map.html'
 repo_path = r'C:\Work in Progress\Repos en GitHub\Mapa-Proyecto-Agricola'
 map_path = os.path.join(repo_path, 'map-creator', map_filename)
@@ -304,7 +305,11 @@ starting_icon_size = (10, 10)
 coords_plaza_ejercito = (-34.86304757940927, -56.169061198494575)
 starting_location = coords_plaza_ejercito
 
-folium_map = folium.Map(location=starting_location, zoom_start=starting_zoom, crs='EPSG3857') # crs='EPSG3857' es para usar el mismo sistema de coordenadas q el de google maps
+folium_map = folium.Map(
+    location=starting_location, 
+    zoom_start=starting_zoom, 
+    crs='EPSG3857' # crs='EPSG3857' es para usar el mismo sistema de coordenadas q el de google maps
+    )
 
 nelson = [-34.8265, -56.2651]
 uam = [-34.8192, -56.2639]
@@ -313,16 +318,15 @@ folium.Marker(
     location=nelson,
     popup="Nelson",
     icon=folium.CustomIcon(nelson_icon_path, icon_size=starting_icon_size),
-).add_to(folium_map)
+    ).add_to(folium_map)
 
 folium.Marker(
     location=uam,
     popup="UAM",
     icon=folium.CustomIcon(uam_icon_path, icon_size=starting_icon_size),
-).add_to(folium_map)
+    ).add_to(folium_map)
 
 credentials = get_google_sheets_credentials()
-sheet_id = '1MgBLt4BwO23ua9Y3JM1ZE02hQYbhbNRoGtmnDKmjj2k'
 spreadsheet = authenticate_and_get_spreadsheet(sheet_id, credentials)
 clients_df = get_clients_df(spreadsheet, clients_dataframe_mapping)
 # suppliers_df = get_suppliers_df(spreadsheet, suppliers_dataframe_mapping)
@@ -331,7 +335,7 @@ id_col = 0
 wwp_col = 1
 coords_col = 2
 
-# folium_map = add_markers_from_google_maps(google_maps_json_data, clients_df, json_of_formatted_open_time, folium_map)
+folium_map = add_markers_from_google_maps(google_maps_json_data, clients_df, json_of_formatted_open_time, folium_map)
 folium_map = add_markers_from_clients_df(clients_df, folium_map)
 
 locate_control = LocateControl()
