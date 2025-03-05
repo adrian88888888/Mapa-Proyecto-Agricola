@@ -161,8 +161,8 @@ def add_markers_from_google_maps(google_maps_json_data, clients_df, json_of_form
             continue
         else:
             if search_term == "Verduleria":
-                # icon_name = 'verduleria.png'
-                continue
+                icon_name = 'verduleria.png'
+                # continue
             elif search_term == 'Agropecuaria':
                 icon_name = 'agropecuaria.png'
             elif search_term == 'Floreria':
