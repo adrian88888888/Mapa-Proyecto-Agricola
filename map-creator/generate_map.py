@@ -306,7 +306,7 @@ coordenadas_dadas_de_baja_por_cualquier_motivo = load_single_col_tsv_into_set(co
 
 starting_zoom = 12
 starting_icon_size = (10, 10)
-coords_plaza_ejercito = (-34.86304757940927, -56.169061198494575)
+coords_plaza_ejercito = (-34.8683627, -56.2217832)
 starting_location = coords_plaza_ejercito
 
 folium_map = folium.Map(
