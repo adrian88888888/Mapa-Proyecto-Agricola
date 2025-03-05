@@ -289,6 +289,7 @@ map_path = os.path.join(repo_path, 'map-creator', map_filename)
 data_from_googleplaces_path                         = repo_path + r'\map-creator\data\from-google-places\json_from_googleplaces.json'
 formatted_open_time_path                            = repo_path + r'\map-creator\data\from-google-places\formatted_open_time.json'
 coordenadas_dadas_de_baja_por_cualquier_motivo_path = repo_path + r'\map-creator\data\coordenadas_dadas_de_baja_por_cualquier_motivo.tsv'
+polyline_zona_18_de_julio_path                      = repo_path + r'\map-creator\data\zonas\zona_18_de_julio.geojson'
 nelson_icon_path    = repo_path + r'\map-creator\icons\nelson.png'
 uam_icon_path       = repo_path + r'\map-creator\icons\uam.png'
 
@@ -297,6 +298,9 @@ with open(data_from_googleplaces_path, 'r') as file:
 
 with open(formatted_open_time_path, 'r') as file:
     json_of_formatted_open_time = json.load(file)
+
+with open(polyline_zona_18_de_julio_path, 'r') as file:
+    zona_18_de_julio = json.load(file)
 
 coordenadas_dadas_de_baja_por_cualquier_motivo = load_single_col_tsv_into_set(coordenadas_dadas_de_baja_por_cualquier_motivo_path)
 
@@ -337,6 +341,7 @@ coords_col = 2
 
 folium_map = add_markers_from_google_maps(google_maps_json_data, clients_df, json_of_formatted_open_time, folium_map)
 folium_map = add_markers_from_clients_df(clients_df, folium_map)
+folium.GeoJson(zona_18_de_julio, name='zona_18_de_julio').add_to(folium_map)
 
 locate_control = LocateControl()
 locate_control.add_to(folium_map)
